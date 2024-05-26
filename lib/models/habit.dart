@@ -1,5 +1,8 @@
 import 'package:isar/isar.dart';
 
+// run cmd to generate file: dart run build_runner build
+part 'habit.g.dart';
+
 @Collection()
 class Habit {
   // Id
@@ -11,7 +14,7 @@ class Habit {
   // Выполненые дни
   List<DateTime> comletedDays = [
     // DateTime(year, month, day),
-    // DateTime (2024, 05, 11),
-    // DateTime (2024, 05, 12),
+    // DateTime (2024, 1, 1),
+    // DateTime (2024, 1, 2),
   ];
 }
