@@ -56,13 +56,16 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // cancel button
-          MaterialButton(onPressed: () {
-            // pop box
-            Navigator.pop(context);
+          MaterialButton(
+            onPressed: () {
+              // pop box
+              Navigator.pop(context);
 
-            //clear controller
-            textController.clear();
-          })
+              //clear controller
+              textController.clear();
+            },
+            child: const Text('Отменить'),
+          )
         ],
       ),
     );
@@ -76,11 +79,95 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // edit habit box
+  void editHabitBox(Habit habit) {
+    // set the controller's text to the habit's current name
+    textController.text = habit.name;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: TextField(
+          controller: textController,
+        ),
+        actions: [
+          // save button
+          MaterialButton(
+            onPressed: () {
+              // get the new habit name
+              String newHabitName = textController.text;
+
+              // save to db
+              context
+                  .read<HabitDatabase>()
+                  .updateHabitName(habit.id, newHabitName);
+
+              // pop box
+              Navigator.pop(context);
+
+              // crear controller
+              textController.clear();
+            },
+            child: const Text('Сохранить'),
+          ),
+
+          // cancel button
+          MaterialButton(
+            onPressed: () {
+              // pop box
+              Navigator.pop(context);
+
+              //clear controller
+              textController.clear();
+            },
+            child: const Text('Отменить'),
+          )
+        ],
+      ),
+    );
+  }
+
+  // delete habit box
+  void deleteHabitBox(Habit habit) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Вы точно хотите удалить?'),
+        actions: [
+          // delete button
+          MaterialButton(
+            onPressed: () {
+              // save to db
+              context.read<HabitDatabase>().deleteHabit(habit.id);
+
+              // pop box
+              Navigator.pop(context);
+            },
+            child: const Text('Удалить'),
+          ),
+
+          // cancel button
+          MaterialButton(
+            onPressed: () {
+              // pop box
+              Navigator.pop(context);
+            },
+            child: const Text('Отменить'),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: AppBar(),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
+      ),
       drawer: const MyDrawer(),
       floatingActionButton: FloatingActionButton(
         onPressed: createNewHabit,
@@ -118,6 +205,8 @@ class _HomePageState extends State<HomePage> {
           isCompleted: isCompletedToday,
           text: habit.name,
           onChanged: (value) => checkHabitOnOff(value, habit),
+          editHabit: (context) => editHabitBox(habit),
+          deleteHabit: (context) => deleteHabitBox(habit),
         );
       },
     );
