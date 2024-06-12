@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habit/components/my_drawer.dart';
 import 'package:habit/components/my_habit_tile.dart';
+import 'package:habit/components/my_heat_map.dart';
 import 'package:habit/database/habit_database.dart';
 import 'package:habit/models/habit.dart';
 import 'package:habit/util/habit_util.dart';
@@ -178,7 +179,43 @@ class _HomePageState extends State<HomePage> {
           color: Colors.black,
         ),
       ),
-      body: _buildHabitList(),
+      body: ListView(
+        children: [
+          // H E A T M A P
+          _buildHeatMap(),
+
+          // H A B I T L I S T
+          _buildHabitList(),
+        ],
+      ),
+    );
+  }
+
+  // build heatmap
+  Widget _buildHeatMap() {
+    // habit database
+    final habitDatabase = context.watch<HabitDatabase>();
+
+    // current habits
+    List<Habit> currentHabits = habitDatabase.currentHabits;
+
+    // return heat map UI
+    return FutureBuilder<DateTime?>(
+      future: habitDatabase.getFirstLaunchDate(),
+      builder: (context, snapshot) {
+        // once the data is available -> build heatmap
+        if (snapshot.hasData) {
+          return MyHeatMap(
+            startDate: snapshot.data!,
+            datasets: prepHeatMapDataset(currentHabits),
+          );
+        }
+
+        // handle case where no data is returned
+        else {
+          return Container();
+        }
+      },
     );
   }
 
@@ -193,12 +230,14 @@ class _HomePageState extends State<HomePage> {
     // return list of habits UI
     return ListView.builder(
       itemCount: currentHabits.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         // get each individual habit
         final habit = currentHabits[index];
 
         // check if the habits is completed today
-        bool isCompletedToday = isHabitCompletedToday(habit.comletedDays);
+        bool isCompletedToday = isHabitCompletedToday(habit.completedDays);
 
         // return habit tile UI
         return MyHabitTile(

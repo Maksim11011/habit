@@ -48,7 +48,7 @@ int _habitEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.comletedDays.length * 8;
+  bytesCount += 3 + object.completedDays.length * 8;
   bytesCount += 3 + object.name.length * 3;
   return bytesCount;
 }
@@ -59,7 +59,7 @@ void _habitSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTimeList(offsets[0], object.comletedDays);
+  writer.writeDateTimeList(offsets[0], object.completedDays);
   writer.writeString(offsets[1], object.name);
 }
 
@@ -70,7 +70,7 @@ Habit _habitDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Habit();
-  object.comletedDays = reader.readDateTimeList(offsets[0]) ?? [];
+  object.completedDays = reader.readDateTimeList(offsets[0]) ?? [];
   object.id = id;
   object.name = reader.readString(offsets[1]);
   return object;
